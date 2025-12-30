@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -48,5 +50,76 @@ class User extends Authenticatable
             'password' => 'hashed',
             'two_factor_confirmed_at' => 'datetime',
         ];
+    }
+
+    // Add these methods inside your User class:
+
+    public function accounts(): HasMany
+    {
+        return $this->hasMany(Account::class);
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function budgets(): HasMany
+    {
+        return $this->hasMany(Budget::class);
+    }
+
+    public function goals(): HasMany
+    {
+        return $this->hasMany(Goal::class);
+    }
+
+    public function goalAllocations(): HasMany
+    {
+        return $this->hasMany(GoalAllocation::class);
+    }
+
+    public function settings(): HasOne
+    {
+        return $this->hasOne(UserSetting::class);
+    }
+
+    // Helper methods
+
+    public function getTotalBalance(): float
+    {
+        return $this->accounts()->where('is_active', true)->sum('balance');
+    }
+
+    public function getMonthlyIncome(int $month = null, int $year = null): float
+    {
+        $month = $month ?? now()->month;
+        $year = $year ?? now()->year;
+        
+        return $this->transactions()
+            ->income()
+            ->forMonth($month, $year)
+            ->sum('amount');
+    }
+
+    public function getMonthlyExpenses(int $month = null, int $year = null): float
+    {
+        $month = $month ?? now()->month;
+        $year = $year ?? now()->year;
+        
+        return $this->transactions()
+            ->expenses()
+            ->forMonth($month, $year)
+            ->sum('amount');
+    }
+
+    public function getProjectedSavings(int $month = null, int $year = null): float
+    {
+        return $this->getMonthlyIncome($month, $year) - $this->getMonthlyExpenses($month, $year);
     }
 }

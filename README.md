@@ -88,11 +88,3 @@ php artisan key:generate
 php artisan migrate:fresh --seed
 
 npm run dev
-
-
-
----
-
-If you want, I can also make a **shorter, beginner-friendly version** that’s easier to follow for new developers. It would reduce the `.env` overload and just highlight essential values.  
-
-Do you want me to do that?

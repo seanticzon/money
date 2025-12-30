@@ -133,7 +133,7 @@ export default function Budgets({
     const existingBudgetCategoryIds = budgets.map(b => b.category.id);
 
     const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
+    const years = Array.from({ length: 7 }, (_, i) => currentYear + 1 - i);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
